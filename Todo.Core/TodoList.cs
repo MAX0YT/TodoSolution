@@ -6,7 +6,7 @@ namespace Todo.Core
 {
     public class TodoList
     {
-        private readonly List<TodoItem> _items = new();
+        private readonly List<TodoItem> _items = new(); //do action
         public IReadOnlyList<TodoItem> Items => _items.AsReadOnly();
         public TodoItem Add(string title)
         {
