@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 
 namespace Todo.Core
 {
     public class TodoList
     {
-        private readonly List<TodoItem> _items = new(); //do action
+        private readonly List<TodoItem> _items = new();
         public IReadOnlyList<TodoItem> Items => _items.AsReadOnly();
         public TodoItem Add(string title)
         {
@@ -19,5 +20,20 @@ namespace Todo.Core
         _items.Where(i => i.Title.Contains(substring ?? string.Empty,
        StringComparison.OrdinalIgnoreCase));
         public int Count => _items.Count;
+
+        public void Save(string path)
+        {
+            var json = JsonSerializer.Serialize(_items, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, json);
+        }
+
+        public static TodoList Load(string path)
+        {
+            var json = File.ReadAllText(path);
+            var items = JsonSerializer.Deserialize<List<TodoItem>>(json) ?? new List<TodoItem>();
+            var list = new TodoList();
+            list._items.AddRange(items);
+            return list;
+        }
     }
 }

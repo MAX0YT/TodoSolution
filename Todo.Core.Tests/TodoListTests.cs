@@ -32,5 +32,32 @@ namespace Todo.Core.Tests
             Assert.Single(found);
             Assert.Equal("Buy milk", found[0].Title);
         }
+        [Fact]
+        public void SaveLoad_PreservesItems()
+        {
+            var path = Path.GetTempFileName();
+            try
+            {
+                var list = new TodoList();
+                var a = list.Add("Buy milk");
+                var b = list.Add("Read book");
+                b.MarkDone();
+
+                list.Save(path);
+                var loaded = TodoList.Load(path);
+
+                Assert.Equal(2, loaded.Count);
+                Assert.Equal(a.Id, loaded.Items[0].Id);
+                Assert.Equal("Buy milk", loaded.Items[0].Title);
+                Assert.True(loaded.Items[1].IsDone);
+            }
+            finally { File.Delete(path); }
+        }
+
+        [Fact]
+        public void Load_MissingFile_Throws()
+        {
+            Assert.Throws<FileNotFoundException>(() => TodoList.Load("no_such_file.json"));
+        }
     }
 }
